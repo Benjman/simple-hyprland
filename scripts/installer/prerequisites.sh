@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Get the directory of the current script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BASE_DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")/../../")
 
 # Source helper file
-source $SCRIPT_DIR/helper.sh
+source $BASE_DIR/scripts/installer/helper.sh
 
 log_message "Installation started for prerequisites section"
 print_info "\nStarting prerequisites setup..."
@@ -14,8 +14,8 @@ run_command "pacman -Syyu --noconfirm" "Update package database and upgrade pack
 if command -v yay > /dev/null; then
     print_info "Skipping yay installation (already installed)."
 elif run_command "pacman -S --noconfirm --needed git base-devel" "Install YAY (Must)/Breaks the script" "yes"; then # 
-    run_command "git clone https://aur.archlinux.org/yay.git && cd yay" "Clone YAY (Must)/Breaks the script" "no" "no" 
-    run_command "makepkg --noconfirm -si && cd .. # builds with makepkg" "Build YAY (Must)/Breaks the script" "no" "no" 
+    run_command "git clone https://aur.archlinux.org/yay.git /tmp/yay.git" "Clone YAY (Must)/Breaks the script" "no" "no" 
+    run_command "makepkg --noconfirm -si -D /tmp/yay.git # builds with makepkg" "Build YAY (Must)/Breaks the script" "no" "no" 
 fi
 run_command "pacman -S --noconfirm pipewire wireplumber pamixer brightnessctl" "Configuring audio and brightness (Recommended)" "yes" 
 
